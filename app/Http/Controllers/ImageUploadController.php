@@ -72,8 +72,19 @@ class ImageUploadController extends Controller
             'message'=> "You Are Not Able To Upload Images"
         ];
 
+        $token = JWTAuth::getToken();
+
+        if(!$token){
+            $status = [
+                'status'=>false,
+                'message'=> "Token Not Available"
+            ];
+            return response()->json($status,200);
+        }
 
         $response = (int) auth('api')->check();
+
+        $user = JWTAuth::toUser( $token);
 
         if(!$response){
             $status = [
@@ -107,32 +118,23 @@ class ImageUploadController extends Controller
 
         if ($file = $request->file('image')) {
 
-            $path = $file->store('public/images');
+            $user_id = $user["id"];
+
+            $path = $file->store('public/images/'.$user_id.'/');
             $name = $file->getClientOriginalName();
   
             //store your file into directory and db
+            $storagePath = \Storage::path("/images/kYr6bwGc6DkIqjyW0CuyRLwQ1eV1vAGGjVYq2CZK.png");
+
             $save = new ImageUpload();
             $save->name = $file;
-            $save->path= $path;
-            $save->save();
-               
-
-            // $path = storage_path('images/' . $name);
-
-            // if (!ImageUpload::exists($path)) {
-            //     abort(404);
-            // }
-
-
-            // $file = ImageUpload::get($path);
-            // $type = ImageUpload::mimeType($path);
-
-            // $response = Response::make($file, 200);
+            $save->path= $storagePath;
+            $save->user_id= $user_id;
+            $save->save();            
 
             $status = [
                 'status'=>false,
-                'message'=> "File successfully uploaded",
-                "file" => $name
+                'message'=> "File successfully uploaded"
             ];
    
         }
