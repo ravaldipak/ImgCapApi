@@ -40,3 +40,6 @@ Route::fallback(function (Request $request) {
 // Login SignUp
 Route::post('signup', [UserController::class, 'register'])->name('register');
 Route::post('login', [UserController::class, 'login'])->name('login');
+
+// Image Upload
+Route::post('upload', [ImageUploadController::class, 'upload'])->name('upload');
